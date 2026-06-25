@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from '../server/routes/auth.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -25,5 +25,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Export for Vercel
-export default app;
+// Export for Vercel serverless function
+export default function handler(req, res) {
+  app(req, res);
+}
