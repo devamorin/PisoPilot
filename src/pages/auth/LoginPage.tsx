@@ -53,118 +53,116 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-            <Wallet className="w-6 h-6 text-on-primary" />
-          </div>
-          <span className="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">
-            PisoPilot
-          </span>
+    <div className="w-full">
+      {/* Logo */}
+      <div className="flex items-center justify-center gap-2 mb-8">
+        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+          <Wallet className="w-6 h-6 text-on-primary" />
+        </div>
+        <span className="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">
+          PisoPilot
+        </span>
+      </div>
+
+      {/* Card */}
+      <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 shadow-lg">
+        <div className="mb-8">
+          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">
+            Welcome back
+          </h1>
+          <p className="font-body-lg text-on-surface-variant">
+            Enter your credentials to access your account
+          </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 shadow-lg">
-          <div className="mb-8">
-            <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">
-              Welcome back
-            </h1>
-            <p className="font-body-lg text-on-surface-variant">
-              Enter your credentials to access your account
-            </p>
+        {/* API Error */}
+        {apiError && (
+          <div className="mb-6 p-4 bg-error-container border border-error rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+            <p className="font-body-sm text-error">{apiError}</p>
           </div>
+        )}
 
-          {/* API Error */}
-          {apiError && (
-            <div className="mb-6 p-4 bg-error-container border border-error rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
-              <p className="font-body-sm text-error">{apiError}</p>
-            </div>
-          )}
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            register={register}
+            error={errors.email}
+            required
+          />
 
-          {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              register={register}
-              error={errors.email}
-              required
-            />
+          <FormField
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            register={register}
+            error={errors.password}
+            required
+          />
 
-            <FormField
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              register={register}
-              error={errors.password}
-              required
-            />
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-surface-variant text-primary focus:ring-primary"
-                />
-                <span className="font-body-sm text-on-surface-variant">
-                  Remember me
-                </span>
-              </label>
-              <a
-                href="#"
-                className="font-body-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </a>
-            </div>
-
-            <Button
-              type="submit"
-              loading={isLoading || isSubmitting}
-              className="w-full"
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                className="w-4 h-4 rounded border-surface-variant text-primary focus:ring-primary"
+              />
+              <span className="font-body-sm text-on-surface-variant">
+                Remember me
+              </span>
+            </label>
+            <a
+              href="#"
+              className="font-body-sm text-primary hover:underline"
             >
-              Sign In
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-surface-variant"></div>
-            <span className="px-4 font-body-sm text-on-surface-variant">
-              or
-            </span>
-            <div className="flex-1 border-t border-surface-variant"></div>
+              Forgot password?
+            </a>
           </div>
 
-          {/* Register Link */}
-          <div className="text-center">
-            <p className="font-body-lg text-on-surface-variant">
-              Don't have an account?{' '}
-              <Link
-                to="/register"
-                className="font-body-lg text-primary hover:underline font-medium"
-              >
-                Sign up for free
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="font-body-sm text-on-surface-variant hover:text-primary transition-colors"
+          <Button
+            type="submit"
+            loading={isLoading || isSubmitting}
+            className="w-full"
           >
-            ← Back to home
-          </Link>
+            Sign In
+          </Button>
+        </form>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-surface-variant"></div>
+          <span className="px-4 font-body-sm text-on-surface-variant">
+            or
+          </span>
+          <div className="flex-1 border-t border-surface-variant"></div>
         </div>
+
+        {/* Register Link */}
+        <div className="text-center">
+          <p className="font-body-lg text-on-surface-variant">
+            Don't have an account?{' '}
+            <Link
+              to="/register"
+              className="font-body-lg text-primary hover:underline font-medium"
+            >
+              Sign up for free
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Back to Home */}
+      <div className="mt-6 text-center">
+        <Link
+          to="/"
+          className="font-body-sm text-on-surface-variant hover:text-primary transition-colors"
+        >
+          ← Back to home
+        </Link>
       </div>
     </div>
   )

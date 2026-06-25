@@ -23,8 +23,8 @@ export function Routes() {
     <ReactRoutes>
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
+      <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
 
       {/* Protected Routes */}
       <Route
