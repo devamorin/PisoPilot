@@ -1,8 +1,8 @@
 -- PisoPilot Database Schema
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS pisopilot;
-USE pisopilot;
+CREATE DATABASE IF NOT EXISTS railway;
+USE railway;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
