@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Wallet, AlertCircle } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
+import { useAuth } from '../../context/AuthContext'
 
 const loginSchema = z.object({
   email: z
@@ -22,6 +23,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -39,11 +41,23 @@ export function LoginPage() {
 
     try {
       // TODO: Connect to backend API
-      // Simulate API call
+      // Simulate API call with mock response
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      console.log('Login data:', data)
-      // On success, navigate to dashboard
+      // Mock response - replace with actual API call
+      const mockResponse = {
+        token: 'mock-jwt-token-' + Date.now(),
+        user: {
+          id: 1,
+          name: 'Test User',
+          email: data.email,
+        }
+      }
+      
+      // Store token and user in AuthContext
+      login(mockResponse.token, mockResponse.user)
+      
+      // Navigate to dashboard
       navigate('/dashboard')
     } catch (error) {
       setApiError('Invalid email or password. Please try again.')

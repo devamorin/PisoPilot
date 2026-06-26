@@ -11,10 +11,27 @@ import { BudgetsPage } from '../pages/budgets/BudgetsPage'
 import { AnalyticsPage } from '../pages/analytics/AnalyticsPage'
 import { GoalsPage } from '../pages/goals/GoalsPage'
 import { SettingsPage } from '../pages/settings/SettingsPage'
+import { useAuth } from '../context/AuthContext'
+import { isValidToken } from '../lib/jwt'
 
-// Protected Route Component (placeholder for Phase 1)
+// Protected Route Component with JWT validation
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // TODO: Implement authentication check in Phase 1
+  const { token, isLoading } = useAuth()
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  // Redirect to login if not authenticated or token is invalid
+  if (!token || !isValidToken(token)) {
+    return <Navigate to="/login" replace />
+  }
+
   return <>{children}</>
 }
 

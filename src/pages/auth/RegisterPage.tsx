@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Wallet, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
+import { useAuth } from '../../context/AuthContext'
 
 const registerSchema = z
   .object({
@@ -36,6 +37,7 @@ type RegisterFormData = z.infer<typeof registerSchema>
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -54,15 +56,26 @@ export function RegisterPage() {
 
     try {
       // TODO: Connect to backend API
-      // Simulate API call
+      // Simulate API call with mock response
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      console.log('Register data:', data)
+      // Mock response - replace with actual API call
+      const mockResponse = {
+        token: 'mock-jwt-token-' + Date.now(),
+        user: {
+          id: 1,
+          name: data.name,
+          email: data.email,
+        }
+      }
+      
+      // Auto-login after successful registration
+      login(mockResponse.token, mockResponse.user)
       setSuccess(true)
       
-      // Redirect to login after successful registration
+      // Redirect to dashboard after successful registration
       setTimeout(() => {
-        navigate('/login')
+        navigate('/dashboard')
       }, 2000)
     } catch (error) {
       setApiError('Registration failed. Email may already be in use.')
@@ -82,7 +95,7 @@ export function RegisterPage() {
             Registration Successful!
           </h1>
           <p className="font-body-lg text-on-surface-variant mb-6">
-            Your account has been created. Redirecting to login...
+            Your account has been created. Redirecting to dashboard...
           </p>
           <div className="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
             <div className="bg-primary h-full animate-[loading_2s_ease-in-out]" style={{ width: '100%' }}></div>
