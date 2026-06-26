@@ -1,9 +1,10 @@
--- PisoPilot Database Schema
+-- PisoPilot Database Schema for Railway
 -- Student-focused expense tracking application
 -- MySQL 8.0+ compatible
+-- 
+-- This version is for Railway MySQL - database already exists
+-- Just run this to create/ update tables
 
--- Create database
-CREATE DATABASE IF NOT EXISTS railway;
 USE railway;
 
 -- Enable foreign key checks
@@ -151,21 +152,12 @@ CREATE TABLE IF NOT EXISTS password_resets (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ============================================
--- DATABASE SUMMARY
+-- VERIFICATION
 -- ============================================
---
--- Total Tables: 5
--- 1. users - User accounts and authentication
--- 2. transactions - Expense transactions
--- 3. budgets - Monthly budget limits
--- 4. goals - Savings goals
--- 5. password_resets - Password reset tokens
---
--- Relationships:
--- - users (1) → transactions (many)
--- - users (1) → budgets (many, one per month)
--- - users (1) → goals (many)
--- - users (1) → password_resets (many)
---
--- All foreign keys use ON DELETE CASCADE for automatic cleanup
---
+-- Run this to verify tables were created:
+-- SHOW TABLES;
+-- DESCRIBE users;
+-- DESCRIBE transactions;
+-- DESCRIBE budgets;
+-- DESCRIBE goals;
+-- DESCRIBE password_resets;

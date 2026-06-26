@@ -53,12 +53,17 @@ Since Vercel is serverless, you need a cloud MySQL database:
 
 **Option 1: PlanetScale (Recommended)**
 1. Sign up at [planetscale.com](https://planetscale.com)
-2. Create a new database
-3. Get your connection string
+2. Create a new database named `pisopilot`
+3. Get your connection credentials (host, user, password)
 4. Update the environment variables with PlanetScale credentials
 
-**Option 2: Other MySQL Providers**
-- Neon (PostgreSQL - would require code changes)
+**Option 2: Railway**
+1. Sign up at [railway.app](https://railway.app)
+2. Create a new MySQL database
+3. Get your connection credentials
+4. Update the environment variables with Railway credentials
+
+**Option 3: Other MySQL Providers**
 - AWS RDS
 - Google Cloud SQL
 - Any other cloud MySQL provider
@@ -73,7 +78,12 @@ pscale shell your-database-name < server/schema.sql
 
 # Or using MySQL client
 mysql -h your-host -u your-user -p your-database < server/schema.sql
+
+# Or using Railway CLI
+railway run mysql -h your-host -u your-user -p your-database < server/schema.sql
 ```
+
+**Important:** The schema creates a database named `pisopilot`. Make sure your environment variable `DB_NAME` matches this.
 
 ### 6. Deploy
 
