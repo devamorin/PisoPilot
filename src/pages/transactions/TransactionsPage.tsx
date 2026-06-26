@@ -158,7 +158,7 @@ export function TransactionsPage() {
         {/* Transactions List */}
         {isMobile ? (
           <div className="space-y-3">
-            {transactions.map((transaction) => (
+            {transactions.map((transaction: Transaction) => (
               <TransactionCard
                 key={transaction.id}
                 transaction={transaction}
