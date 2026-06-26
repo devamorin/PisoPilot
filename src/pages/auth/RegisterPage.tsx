@@ -7,6 +7,7 @@ import { Wallet, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
 import { useAuth } from '../../context/AuthContext'
+import OTPVerificationForm from '../../components/auth/OTPVerificationForm'
 
 const registerSchema = z
   .object({
@@ -41,6 +42,8 @@ export function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [showOTP, setShowOTP] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
 
   const {
     register,
@@ -55,51 +58,102 @@ export function RegisterPage() {
     setApiError(null)
 
     try {
-      // TODO: Connect to backend API
-      // Simulate API call with mock response
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock response - replace with actual API call
-      const mockResponse = {
-        token: 'mock-jwt-token-' + Date.now(),
-        user: {
-          id: 1,
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: data.name,
           email: data.email,
-        }
+          password: data.password,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setRegisteredEmail(data.email)
+        setShowOTP(true)
+      } else {
+        setApiError(result.error || 'Registration failed. Email may already be in use.')
       }
-      
-      // Auto-login after successful registration
-      login(mockResponse.token, mockResponse.user)
-      setSuccess(true)
-      
-      // Redirect to dashboard after successful registration
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 2000)
     } catch (error) {
-      setApiError('Registration failed. Email may already be in use.')
+      setApiError('Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleVerificationSuccess = () => {
+    setSuccess(true)
+    setTimeout(() => {
+      navigate('/login')
+    }, 2000)
+  }
+
+  const handleResendOTP = async (email: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const result = await response.json()
+      return result.success
+    } catch (error) {
+      return false
     }
   }
 
   if (success) {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 shadow-lg text-center">
-          <div className="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8 text-on-primary-container" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg text-center">
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">
-            Registration Successful!
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Email Verified!
           </h1>
-          <p className="font-body-lg text-on-surface-variant mb-6">
-            Your account has been created. Redirecting to dashboard...
+          <p className="text-gray-600 mb-6">
+            Your account has been verified. Redirecting to login...
           </p>
-          <div className="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
-            <div className="bg-primary h-full animate-[loading_2s_ease-in-out]" style={{ width: '100%' }}></div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="bg-blue-600 h-full animate-[loading_2s_ease-in-out]" style={{ width: '100%' }}></div>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (showOTP) {
+    return (
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+            <Wallet className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-2xl font-bold text-blue-600 tracking-tight">
+            PisoPilot
+          </span>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
+          <OTPVerificationForm
+            defaultEmail={registeredEmail}
+            onSuccess={handleVerificationSuccess}
+            onResend={handleResendOTP}
+          />
+        </div>
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => setShowOTP(false)}
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            ← Back to registration
+          </button>
         </div>
       </div>
     )
@@ -109,30 +163,30 @@ export function RegisterPage() {
     <div className="w-full max-w-md">
       {/* Logo */}
       <div className="flex items-center justify-center gap-2 mb-8">
-        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-          <Wallet className="w-6 h-6 text-on-primary" />
+        <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+          <Wallet className="w-6 h-6 text-white" />
         </div>
-        <span className="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">
+        <span className="text-2xl font-bold text-blue-600 tracking-tight">
           PisoPilot
         </span>
       </div>
 
       {/* Card */}
-      <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 shadow-lg">
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
         <div className="mb-8">
-          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Create your account
           </h1>
-          <p className="font-body-lg text-on-surface-variant">
+          <p className="text-gray-600">
             Start tracking your expenses today
           </p>
         </div>
 
         {/* API Error */}
         {apiError && (
-          <div className="mb-6 p-4 bg-error-container border border-error rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
-            <p className="font-body-sm text-error">{apiError}</p>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{apiError}</p>
           </div>
         )}
 
@@ -182,16 +236,16 @@ export function RegisterPage() {
             <input
               type="checkbox"
               id="terms"
-              className="w-4 h-4 mt-1 rounded border-surface-variant text-primary focus:ring-primary"
+              className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
               required
             />
-            <label htmlFor="terms" className="font-body-sm text-on-surface-variant">
+            <label htmlFor="terms" className="text-sm text-gray-600">
               I agree to the{' '}
-              <a href="#" className="text-primary hover:underline">
+              <a href="#" className="text-blue-600 hover:underline">
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="#" className="text-primary hover:underline">
+              <a href="#" className="text-blue-600 hover:underline">
                 Privacy Policy
               </a>
             </label>
@@ -208,20 +262,20 @@ export function RegisterPage() {
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-surface-variant"></div>
-          <span className="px-4 font-body-sm text-on-surface-variant">
+          <div className="flex-1 border-t border-gray-200"></div>
+          <span className="px-4 text-sm text-gray-500">
             or
           </span>
-          <div className="flex-1 border-t border-surface-variant"></div>
+          <div className="flex-1 border-t border-gray-200"></div>
         </div>
 
         {/* Login Link */}
         <div className="text-center">
-          <p className="font-body-lg text-on-surface-variant">
+          <p className="text-gray-600">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="font-body-lg text-primary hover:underline font-medium"
+              className="text-blue-600 hover:underline font-medium"
             >
               Sign in
             </Link>
@@ -233,7 +287,7 @@ export function RegisterPage() {
       <div className="mt-6 text-center">
         <Link
           to="/"
-          className="font-body-sm text-on-surface-variant hover:text-primary transition-colors"
+          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
           ← Back to home
         </Link>

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
-import { Wallet, AlertCircle } from 'lucide-react'
+import { Wallet, AlertCircle, Mail } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
 import { useAuth } from '../../context/AuthContext'
@@ -26,6 +26,8 @@ export function LoginPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [requiresVerification, setRequiresVerification] = useState(false)
+  const [verificationEmail, setVerificationEmail] = useState('')
 
   const {
     register,
@@ -38,62 +40,82 @@ export function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setApiError(null)
+    setRequiresVerification(false)
 
     try {
-      // TODO: Connect to backend API
-      // Simulate API call with mock response
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock response - replace with actual API call
-      const mockResponse = {
-        token: 'mock-jwt-token-' + Date.now(),
-        user: {
-          id: 1,
-          name: 'Test User',
-          email: data.email,
-        }
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        // Store token and user in AuthContext
+        login(result.token, result.user)
+        
+        // Navigate to dashboard
+        navigate('/dashboard')
+      } else if (result.requiresVerification) {
+        // Account not verified
+        setRequiresVerification(true)
+        setVerificationEmail(result.email || data.email)
+        setApiError('Please verify your email before logging in')
+      } else {
+        setApiError(result.error || 'Invalid email or password. Please try again.')
       }
-      
-      // Store token and user in AuthContext
-      login(mockResponse.token, mockResponse.user)
-      
-      // Navigate to dashboard
-      navigate('/dashboard')
     } catch (error) {
-      setApiError('Invalid email or password. Please try again.')
+      setApiError('Failed to login. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleResendVerification = () => {
+    // Navigate to register page with email pre-filled for verification
+    navigate('/verify', { state: { email: verificationEmail } })
+  }
+
   return (
-    <div className="w-full">
+    <div className="w-full max-w-md">
       {/* Logo */}
       <div className="flex items-center justify-center gap-2 mb-8">
-        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-          <Wallet className="w-6 h-6 text-on-primary" />
+        <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+          <Wallet className="w-6 h-6 text-white" />
         </div>
-        <span className="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">
+        <span className="text-2xl font-bold text-blue-600 tracking-tight">
           PisoPilot
         </span>
       </div>
 
       {/* Card */}
-      <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 shadow-lg">
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
         <div className="mb-8">
-          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome back
           </h1>
-          <p className="font-body-lg text-on-surface-variant">
+          <p className="text-gray-600">
             Enter your credentials to access your account
           </p>
         </div>
 
         {/* API Error */}
         {apiError && (
-          <div className="mb-6 p-4 bg-error-container border border-error rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
-            <p className="font-body-sm text-error">{apiError}</p>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-red-600">{apiError}</p>
+              {requiresVerification && (
+                <button
+                  onClick={handleResendVerification}
+                  className="mt-2 text-sm text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  <Mail className="w-3 h-3" />
+                  Resend verification code
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -123,18 +145,18 @@ export function LoginPage() {
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded border-surface-variant text-primary focus:ring-primary"
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
               />
-              <span className="font-body-sm text-on-surface-variant">
+              <span className="text-sm text-gray-600">
                 Remember me
               </span>
             </label>
-            <a
-              href="#"
-              className="font-body-sm text-primary hover:underline"
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:underline"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <Button
@@ -148,20 +170,20 @@ export function LoginPage() {
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-surface-variant"></div>
-          <span className="px-4 font-body-sm text-on-surface-variant">
+          <div className="flex-1 border-t border-gray-200"></div>
+          <span className="px-4 text-sm text-gray-500">
             or
           </span>
-          <div className="flex-1 border-t border-surface-variant"></div>
+          <div className="flex-1 border-t border-gray-200"></div>
         </div>
 
         {/* Register Link */}
         <div className="text-center">
-          <p className="font-body-lg text-on-surface-variant">
+          <p className="text-gray-600">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="font-body-lg text-primary hover:underline font-medium"
+              className="text-blue-600 hover:underline font-medium"
             >
               Sign up for free
             </Link>
@@ -173,7 +195,7 @@ export function LoginPage() {
       <div className="mt-6 text-center">
         <Link
           to="/"
-          className="font-body-sm text-on-surface-variant hover:text-primary transition-colors"
+          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
           ← Back to home
         </Link>

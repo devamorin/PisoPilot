@@ -130,10 +130,10 @@ export interface TransactionFilters {
 // Category Types
 export type ExpenseCategory = 
   | 'Food'
-  | 'Transportation'
-  | 'Education'
+  | 'Transport'
+  | 'School'
   | 'Entertainment'
+  | 'Bills'
   | 'Shopping'
   | 'Health'
-  | 'Utilities'
   | 'Others'

@@ -2,23 +2,23 @@ import { ExpenseCategory } from '@/types'
 
 export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   'Food',
-  'Transportation',
-  'Education',
+  'Transport',
+  'School',
   'Entertainment',
+  'Bills',
   'Shopping',
   'Health',
-  'Utilities',
   'Others',
 ]
 
 export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   Food: '#ef4444',
-  Transportation: '#f97316',
-  Education: '#eab308',
+  Transport: '#f97316',
+  School: '#eab308',
   Entertainment: '#22c55e',
-  Shopping: '#3b82f6',
-  Health: '#8b5cf6',
-  Utilities: '#ec4899',
+  Bills: '#3b82f6',
+  Shopping: '#8b5cf6',
+  Health: '#ec4899',
   Others: '#6b7280',
 }
 

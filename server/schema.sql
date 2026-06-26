@@ -19,12 +19,16 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(255) NOT NULL COMMENT 'Full name of the user',
   email VARCHAR(255) NOT NULL UNIQUE COMMENT 'User email address (unique)',
   password_hash VARCHAR(255) NOT NULL COMMENT 'Bcrypt hashed password',
+  is_verified BOOLEAN DEFAULT FALSE COMMENT 'Email verification status',
+  verification_code VARCHAR(6) COMMENT '6-digit OTP code for email verification',
+  verification_expires TIMESTAMP NULL COMMENT 'OTP expiration timestamp',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Account creation timestamp',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp',
   
   -- Indexes
   INDEX idx_email (email) COMMENT 'Fast lookup by email for login',
-  INDEX idx_created_at (created_at) COMMENT 'For user analytics and sorting'
+  INDEX idx_created_at (created_at) COMMENT 'For user analytics and sorting',
+  INDEX idx_verification_code (verification_code) COMMENT 'For OTP verification'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication data';
 
 -- ============================================
@@ -125,6 +129,27 @@ CREATE TABLE IF NOT EXISTS goals (
 
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ============================================
+-- PASSWORD RESETS TABLE
+-- ============================================
+-- Stores password reset tokens for secure password recovery
+-- Design: Many-to-one relationship with users
+CREATE TABLE IF NOT EXISTS password_resets (
+  id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique reset token identifier',
+  user_id INT NOT NULL COMMENT 'Foreign key to users table',
+  reset_token VARCHAR(64) NOT NULL COMMENT 'Secure reset token',
+  expires_at TIMESTAMP NOT NULL COMMENT 'Token expiration timestamp',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Token creation timestamp',
+  
+  -- Foreign Key
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE COMMENT 'Cascade delete when user is deleted',
+  
+  -- Indexes
+  INDEX idx_user_id (user_id) COMMENT 'Fast lookup of user reset tokens',
+  INDEX idx_reset_token (reset_token) COMMENT 'For token validation',
+  INDEX idx_expires_at (expires_at) COMMENT 'For cleanup of expired tokens'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Password reset tokens';
 
 -- ============================================
 -- DESIGN DECISIONS DOCUMENTATION
