@@ -2,12 +2,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
-import Input from '@/components/common/Input'
-import Select from '@/components/common/Select'
-import DatePicker from '@/components/common/DatePicker'
-import Button from '@/components/common/Button'
-import { EXPENSE_CATEGORIES } from '@/lib/constants'
-import { CreateTransactionInput, UpdateTransactionInput, Transaction } from '@/types'
+import Input from '../common/Input'
+import Select from '../common/Select'
+import DatePicker from '../common/DatePicker'
+import Button from '../common/Button'
+import { EXPENSE_CATEGORIES } from '../../lib/constants'
+import { CreateTransactionInput, UpdateTransactionInput, Transaction } from '../../types'
 
 const transactionSchema = z.object({
   amount: z

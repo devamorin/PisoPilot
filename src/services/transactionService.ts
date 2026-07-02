@@ -5,7 +5,7 @@ import {
   UpdateTransactionInput,
   TransactionFilters,
   ApiResponse,
-} from '@/types'
+} from '../types'
 
 export const transactionService = {
   // Get all transactions with optional filters

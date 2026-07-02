@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import Input from '@/components/common/Input'
-import Button from '@/components/common/Button'
+import Input from './Input'
+import Button from './Button'
 import { Mail, RefreshCw } from 'lucide-react'
 
 const otpSchema = z.object({

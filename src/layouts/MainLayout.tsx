@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Sidebar } from '@/components/common/Sidebar'
-import { MobileNavigation } from '@/components/common/MobileNavigation'
+import { Sidebar } from '../components/common/Sidebar'
+import { MobileNavigation } from '../components/common/MobileNavigation'
 
 interface MainLayoutProps {
   children?: ReactNode

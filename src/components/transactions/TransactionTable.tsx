@@ -1,8 +1,8 @@
-import { Transaction } from '@/types'
-import { CATEGORY_COLORS } from '@/lib/constants'
+import { Transaction } from '../../types'
+import { CATEGORY_COLORS } from '../../lib/constants'
 import { format } from 'date-fns'
 import { Pencil, Trash2 } from 'lucide-react'
-import Button from '@/components/common/Button'
+import Button from '../common/Button'
 
 interface TransactionTableProps {
   transactions: Transaction[]
