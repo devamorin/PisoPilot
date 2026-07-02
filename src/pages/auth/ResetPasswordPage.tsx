@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Wallet, AlertCircle, CheckCircle2, ArrowLeft, Lock } from 'lucide-react'
-import Button from '@/components/common/Button'
-import Input from '@/components/common/Input'
+import Button from '../../components/common/Button'
+import Input from '../../components/common/Input'
 
 const resetPasswordSchema = z
   .object({

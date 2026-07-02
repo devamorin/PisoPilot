@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
 import { Wallet, Mail, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
-import Button from '@/components/common/Button'
-import Input from '@/components/common/Input'
+import Button from '../../components/common/Button'
+import Input from '../../components/common/Input'
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),

@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { Wallet, AlertCircle, Mail } from 'lucide-react'
-import { Button } from '../../components/auth/Button'
-import { FormField } from '../../components/auth/FormField'
+import Button from '../../components/common/Button'
+import { FormField } from '../../components/common/FormField'
 import { useAuth } from '../../context/AuthContext'
 
 const loginSchema = z.object({
@@ -161,7 +161,7 @@ export function LoginPage() {
 
           <Button
             type="submit"
-            loading={isLoading || isSubmitting}
+            isLoading={isLoading || isSubmitting}
             className="w-full"
           >
             Sign In

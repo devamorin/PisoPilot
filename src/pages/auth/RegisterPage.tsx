@@ -4,10 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { Wallet, AlertCircle, CheckCircle2 } from 'lucide-react'
-import { Button } from '../../components/auth/Button'
-import { FormField } from '../../components/auth/FormField'
+import Button from '../../components/common/Button'
+import { FormField } from '../../components/common/FormField'
 import { useAuth } from '../../context/AuthContext'
-import OTPVerificationForm from '../../components/auth/OTPVerificationForm'
+import OTPVerificationForm from '../../components/common/OTPVerificationForm'
 
 const registerSchema = z
   .object({
@@ -253,7 +253,7 @@ export function RegisterPage() {
 
           <Button
             type="submit"
-            loading={isLoading || isSubmitting}
+            isLoading={isLoading || isSubmitting}
             className="w-full"
           >
             Create Account
