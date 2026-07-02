@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
-import { Wallet, AlertCircle } from 'lucide-react'
+import { Wallet, AlertCircle, Mail } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
 import { useAuth } from '../../context/AuthContext'
@@ -26,6 +26,8 @@ export function LoginPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [requiresVerification, setRequiresVerification] = useState(false)
+  const [verificationEmail, setVerificationEmail] = useState('')
 
   const {
     register,
@@ -38,6 +40,7 @@ export function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setApiError(null)
+    setRequiresVerification(false)
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
@@ -54,6 +57,11 @@ export function LoginPage() {
         
         // Navigate to dashboard
         navigate('/dashboard')
+      } else if (result.requiresVerification) {
+        // Account not verified
+        setRequiresVerification(true)
+        setVerificationEmail(result.email || data.email)
+        setApiError('Please verify your email before logging in')
       } else {
         setApiError(result.error || 'Invalid email or password. Please try again.')
       }
@@ -62,6 +70,11 @@ export function LoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleResendVerification = () => {
+    // Navigate to register page with email pre-filled for verification
+    navigate('/verify', { state: { email: verificationEmail } })
   }
 
   return (
@@ -91,7 +104,18 @@ export function LoginPage() {
         {apiError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600">{apiError}</p>
+            <div className="flex-1">
+              <p className="text-sm text-red-600">{apiError}</p>
+              {requiresVerification && (
+                <button
+                  onClick={handleResendVerification}
+                  className="mt-2 text-sm text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  <Mail className="w-3 h-3" />
+                  Resend verification code
+                </button>
+              )}
+            </div>
           </div>
         )}
 

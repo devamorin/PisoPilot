@@ -24,24 +24,18 @@ export const register = async (req, res) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Create user with verified status
+    // Create user
     const userId = await User.create(name, email, passwordHash);
 
-    // Generate JWT token immediately
-    const token = jwt.sign(
-      { userId, email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    // Generate and send OTP
+    const otp = generateOTP();
+    await User.setVerificationCode(userId, otp);
+    await sendVerificationEmail(email, otp);
 
     res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: userId,
-        name,
-        email
-      }
+      message: 'User registered successfully. Please check your email for verification code.',
+      userId,
+      requiresVerification: true
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -69,6 +63,15 @@ export const login = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check if email is verified
+    if (!user.is_verified) {
+      return res.status(403).json({
+        error: 'Please verify your email before logging in',
+        requiresVerification: true,
+        email: user.email
+      });
     }
 
     // Generate JWT token

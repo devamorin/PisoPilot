@@ -3,10 +3,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
-import { Wallet, AlertCircle } from 'lucide-react'
+import { Wallet, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '../../components/auth/Button'
 import { FormField } from '../../components/auth/FormField'
 import { useAuth } from '../../context/AuthContext'
+import OTPVerificationForm from '../../components/auth/OTPVerificationForm'
 
 const registerSchema = z
   .object({
@@ -40,6 +41,9 @@ export function RegisterPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [showOTP, setShowOTP] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
 
   const {
     register,
@@ -67,11 +71,8 @@ export function RegisterPage() {
       const result = await response.json()
 
       if (response.ok) {
-        // Store token and user in AuthContext
-        login(result.token, result.user)
-        
-        // Navigate to dashboard
-        navigate('/dashboard')
+        setRegisteredEmail(data.email)
+        setShowOTP(true)
       } else {
         setApiError(result.error || 'Registration failed. Email may already be in use.')
       }
@@ -80,6 +81,82 @@ export function RegisterPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleVerificationSuccess = () => {
+    setSuccess(true)
+    setTimeout(() => {
+      navigate('/login')
+    }, 2000)
+  }
+
+  const handleResendOTP = async (email: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const result = await response.json()
+      return result.success
+    } catch (error) {
+      return false
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg text-center">
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Email Verified!
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Your account has been verified. Redirecting to login...
+          </p>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="bg-blue-600 h-full animate-[loading_2s_ease-in-out]" style={{ width: '100%' }}></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (showOTP) {
+    return (
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+            <Wallet className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-2xl font-bold text-blue-600 tracking-tight">
+            PisoPilot
+          </span>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
+          <OTPVerificationForm
+            defaultEmail={registeredEmail}
+            onSuccess={handleVerificationSuccess}
+            onResend={handleResendOTP}
+          />
+        </div>
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => setShowOTP(false)}
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            ← Back to registration
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
