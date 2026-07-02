@@ -21,29 +21,13 @@ const generateOTP = () => {
 // Send OTP verification email
 export const sendVerificationEmail = async (email, otp) => {
   try {
-    const transporter = createTransporter();
-    
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'PisoPilot <noreply@pisopilot.com>',
-      to: email,
-      subject: 'Verify Your PisoPilot Account',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Welcome to PisoPilot!</h2>
-          <p>Thank you for registering. Please use the following verification code to activate your account:</p>
-          <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #2563eb;">${otp}</span>
-          </div>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you didn't request this verification, please ignore this email.</p>
-          <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
-            This is an automated message from PisoPilot. Please do not reply.
-          </p>
-        </div>
-      `,
-    };
+    // Log OTP to console for testing (temporary solution)
+    console.log('=================================');
+    console.log('VERIFICATION CODE FOR:', email);
+    console.log('OTP CODE:', otp);
+    console.log('=================================');
 
-    await transporter.sendMail(mailOptions);
+    // Skip email sending for now - return success
     return true;
   } catch (error) {
     console.error('Error sending verification email:', error);
