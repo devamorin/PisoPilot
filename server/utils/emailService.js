@@ -1,17 +1,9 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
-// Create transporter
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 465,
-    secure: process.env.EMAIL_SECURE === 'true' || true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-};
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Generate 6-digit OTP
 const generateOTP = () => {
@@ -21,11 +13,9 @@ const generateOTP = () => {
 // Send OTP verification email
 export const sendVerificationEmail = async (email, otp) => {
   try {
-    const transporter = createTransporter();
-    
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'PisoPilot <noreply@pisopilot.com>',
+    const msg = {
       to: email,
+      from: process.env.EMAIL_FROM || 'noreply@pisopilot.com',
       subject: 'Verify Your PisoPilot Account',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -43,7 +33,7 @@ export const sendVerificationEmail = async (email, otp) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     return true;
   } catch (error) {
     console.error('Error sending verification email:', error);
@@ -61,12 +51,11 @@ export const sendVerificationEmail = async (email, otp) => {
 // Send password reset email
 export const sendPasswordResetEmail = async (email, resetToken) => {
   try {
-    const transporter = createTransporter();
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'PisoPilot <noreply@pisopilot.com>',
+    const msg = {
       to: email,
+      from: process.env.EMAIL_FROM || 'noreply@pisopilot.com',
       subject: 'Reset Your PisoPilot Password',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -87,7 +76,7 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     return true;
   } catch (error) {
     console.error('Error sending password reset email:', error);
